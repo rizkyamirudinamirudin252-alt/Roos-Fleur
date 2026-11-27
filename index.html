@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roos & Fleur - Integrated SPA & Admin Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        blush: {
+                            50: '#fdf2f8', 100: '#fce7f3', 200: '#fbcfe8',
+                            300: '#f9a8d4', 400: '#f472b6', 500: '#ec4899', 600: '#db2777',
+                        },
+                        sage: {
+                            500: '#849b87', 600: '#687f6b',
+                        },
+                        rose: {
+                            50: '#fff1f2', 100: '#ffe4e6', 500: '#f43f5e',
+                            600: '#e11d48', 700: '#be123c',
+                        },
+                        emerald: {
+                            50: '#ecfdf5', 500: '#10b981', 600: '#059669',
+                        }
+                    },
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                        playfair: ['Playfair Display', 'serif'],
+                        jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link id="storeFavicon" rel="icon" href="">
+
+</head>
+
+<body id="appBody" class="antialiased transition-colors duration-300">
+
+    <!-- ========================================== -->
+    <!--          STOREFRONT APPLICATION            -->
+    <!-- ========================================== -->
+    <div id="storeApp" class="hidden relative overflow-x-hidden">
+        
+        <!-- NAVBAR -->
+        <nav class="fixed w-full z-40 bg-white/95 backdrop-blur-md border-b border-blush-100 shadow-sm transition-all duration-300" id="navbar">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <!-- Logo -->
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                        <i id="storeLogoIcon" class="fa-solid fa-seedling text-blush-500 text-2xl"></i><img id="storeLogoImage" alt="Logo toko" class="hidden h-9 w-9 rounded-full object-contain">
+                        <span class="font-playfair text-2xl font-bold text-slate-900 tracking-wide hidden sm:block">Roos & Fleur</span>
+                    </div>
+                    
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex items-center space-x-6">
+                        <button onclick="filterCategory('Semua')" class="nav-kategori text-sm font-semibold text-blush-500 hover:text-blush-600 transition-colors">Semua</button>
+                        <button onclick="filterCategory('Ulang Tahun')" class="nav-kategori text-sm font-medium text-slate-600 hover:text-blush-500 transition-colors">Ulang Tahun</button>
+                        <button onclick="filterCategory('Wisuda')" class="nav-kategori text-sm font-medium text-slate-600 hover:text-blush-500 transition-colors">Wisuda</button>
+                        <button onclick="filterCategory('Anniversary')" class="nav-kategori text-sm font-medium text-slate-600 hover:text-blush-500 transition-colors">Anniversary</button>
+                        
+                        <div class="h-5 w-px bg-slate-300 mx-2"></div>
+                        <a href="#custom-builder" class="text-sm font-medium text-slate-600 hover:text-blush-500 transition-colors">Rakit Custom</a>
+                        <button onclick="openCustomerInfo('about')" class="text-sm font-medium text-slate-600 hover:text-blush-500 transition-colors">Tentang Kami</button>
+                        <button onclick="openCustomerInfo('contact')" class="text-sm font-medium text-slate-600 hover:text-blush-500 transition-colors">Kontak</button>
+                    </div>
+
+                    <!-- Icons & Admin Portal Link -->
+                    <div class="flex items-center gap-5">
+                        <button onclick="openAuth('customer')" id="customerAccountButton" class="hidden sm:inline-flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-blush-600"><i class="fa-regular fa-user"></i><span>Akun Saya</span></button>
+                        <a href="#admin" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-blush-600 bg-blush-50 px-3 py-2 rounded-xl border border-blush-200 hover:bg-blush-100 transition-colors">
+                            <i class="fa-solid fa-lock text-[10px]"></i> Portal Admin
+                        </a>
+                        <button onclick="toggleStoreCart()" class="text-slate-600 hover:text-blush-500 transition-colors relative flex items-center">
+                            <i class="fa-solid fa-bag-shopping text-2xl"></i>
+                            <span id="cartBadge" class="absolute -top-2 -right-2 bg-blush-500 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm hidden">0</span>
+                        </button>
+                        <button onclick="showWishlist()" aria-label="Lihat wishlist" class="text-slate-600 hover:text-rose-500"><i class="fa-regular fa-heart text-xl"></i></button>
+                        <button class="md:hidden text-slate-600 text-xl" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Dropdown -->
+                <div id="mobileMenu" class="md:hidden hidden pb-4 pt-2 border-t border-slate-100 flex flex-col gap-3">
+                    <button onclick="filterCategory('Semua')" class="text-left font-medium text-slate-600 px-2 py-1">Semua Buket</button>
+                    <button onclick="filterCategory('Ulang Tahun')" class="text-left font-medium text-slate-600 px-2 py-1">Ulang Tahun</button>
+                    <button onclick="filterCategory('Wisuda')" class="text-left font-medium text-slate-600 px-2 py-1">Wisuda</button>
+                    <button onclick="filterCategory('Anniversary')" class="text-left font-medium text-slate-600 px-2 py-1">Anniversary</button>
+                    <a href="#custom-builder" class="text-left font-medium text-blush-500 px-2 py-1">Rakit Custom</a>
+                    <button onclick="openCustomerInfo('about')" class="text-left font-medium text-slate-600 px-2 py-1">Tentang Kami</button>
+                    <button onclick="openCustomerInfo('contact')" class="text-left font-medium text-slate-600 px-2 py-1">Kontak</button>
+                    <button onclick="showWishlist()" class="text-left font-medium text-rose-600 px-2 py-1">♡ Wishlist</button>
+                    <button onclick="openAuth('customer')" class="text-left font-semibold text-slate-700 px-2 py-1"><i class="fa-regular fa-user mr-1"></i> Akun Pelanggan</button>
+                    <a href="#admin" class="text-left font-bold text-rose-600 px-2 py-1"><i class="fa-solid fa-lock mr-1"></i> Portal Admin Dashboard</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- HERO SECTION -->
+        <section class="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-blush-50">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-blush-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 transform -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 transform translate-x-1/3 translate-y-1/3"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col md:flex-row items-center">
+                <div class="w-full md:w-1/2 text-center md:text-left pt-10 md:pt-0 pr-0 md:pr-10">
+                    <span class="text-blush-600 font-semibold tracking-wider text-sm uppercase mb-4 block">Koleksi Spesial Musim Ini</span>
+                    <h1 class="font-playfair text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 mb-6">
+                        Sampaikan Perasaanmu Melalui <span class="text-blush-500 italic">Bunga</span>
+                    </h1>
+                    <p class="text-slate-600 text-lg mb-8 max-w-lg mx-auto md:mx-0 font-poppins">
+                        Buket bunga segar dan premium di <strong>Roos & Fleur</strong> yang dirangkai khusus untuk momen spesial orang terkasih Anda. Pesan hari ini, gratis kartu ucapan!
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start font-poppins">
+                        <button onclick="filterCategory('Semua')" class="px-8 py-4 bg-blush-500 hover:bg-blush-600 text-white font-semibold rounded-full shadow-lg shadow-blush-500/30 transition-all text-center">
+                            Lihat Katalog
+                        </button>
+                        <a href="#custom-builder" class="px-8 py-4 bg-white hover:bg-blush-50 text-blush-600 border border-blush-200 font-semibold rounded-full shadow-sm transition-all text-center flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Rakit Buket Sendiri
+                        </a>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 mt-12 md:mt-0 relative">
+                    <div class="relative rounded-t-full rounded-b-[4rem] overflow-hidden shadow-2xl border-4 border-white aspect-[4/5] md:aspect-auto md:h-[550px] mx-auto max-w-md bg-pink-100">
+                        <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=800&q=80" alt="Beautiful Bouquet" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute bottom-10 -left-6 md:left-4 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce font-poppins" style="animation-duration: 3s;">
+                        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-500 text-xl">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">Layanan Pengiriman</p>
+                            <p class="text-sm font-bold text-slate-800">Same-Day Delivery</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATALOG SECTION -->
+        <section id="katalog" class="py-20 bg-white font-poppins">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12 pt-10">
+                    <h2 id="catalogTitle" class="font-playfair text-3xl md:text-4xl font-bold text-slate-900 mb-4 transition-all">Koleksi Semua Buket</h2>
+                    <p class="text-slate-500">Pilih dari rangkaian bunga segar kami, termasuk varian terbaru yang ditambahkan admin secara real-time.</p>
+                </div>
+                
+                <!-- Category Filters -->
+                <div id="catalogCategoryFilters" class="flex justify-center gap-3 mb-10 overflow-x-auto pb-4 scrollbar-hide">
+                    <button onclick="filterCategory('Semua')" id="pill-Semua" class="pill-btn px-6 py-2.5 bg-slate-800 text-white rounded-full text-sm font-medium whitespace-nowrap shadow-md transition-all" data-category="Semua">Semua Produk</button>
+                </div>
+
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_290px] lg:items-start">
+                    <!-- Product Grid (Dynamically synchronized with Admin) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-opacity duration-300" id="productGrid">
+                        <!-- Products injected via JS -->
+                    </div>
+
+                    <!-- Customer Promotion Sidebar -->
+                    <aside id="storePromoCard" class="promo-card-motion relative overflow-hidden rounded-3xl bg-slate-900 p-6 text-white shadow-xl lg:sticky lg:top-24" aria-label="Promo Roos & Fleur" aria-roledescription="carousel">
+                        <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=700&q=80" alt="Buket bunga pink untuk promo spesial" class="absolute inset-0 h-full w-full object-cover opacity-35">
+                        <div class="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-900/75 to-slate-950"></div>
+                        <div class="relative z-10 flex min-h-[360px] flex-col">
+                            <div class="flex items-center justify-between">
+                                <span class="promo-badge-motion rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold tracking-wider text-blush-100 backdrop-blur-sm">PROMO HARI INI</span>
+                                <i class="fa-solid fa-gift text-xl text-blush-300"></i>
+                            </div>
+                            <div class="mt-auto">
+                                <p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-blush-200">Khusus pelanggan online</p>
+                                <h3 id="storePromoTitle" class="font-playfair text-3xl font-bold leading-tight">Hemat 10% untuk buket pilihanmu.</h3>
+                                <p id="storePromoDescription" class="mt-3 text-sm leading-6 text-slate-200">Gunakan kode promo saat checkout untuk pesanan minimal Rp100.000.</p>
+                                <div class="mt-5 flex items-center justify-between rounded-2xl border border-white/20 bg-white/10 px-4 py-3 backdrop-blur-sm">
+                                    <span class="text-xs text-slate-200">Kode promo</span>
+                                    <span id="storePromoCode" class="promo-code-motion font-mono text-lg font-bold tracking-wider text-white">FLEUR10</span>
+                                </div>
+                                <button type="button" onclick="filterCategory('Semua')" class="mt-5 w-full rounded-xl bg-blush-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-blush-500/30 transition hover:bg-blush-600">
+                                    <span id="storePromoButtonText">Pilih Buket Sekarang</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                            <div id="storePromoControls" class="relative z-10 mt-4 flex items-center justify-between" aria-label="Kontrol slider promo">
+                                <button type="button" onclick="moveStorePromotion(-1)" aria-label="Promo sebelumnya" class="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 transition hover:bg-white/20"><i class="fa-solid fa-chevron-left"></i></button>
+                                <div id="storePromoDots" class="flex items-center gap-2" aria-label="Posisi promo"></div>
+                                <button type="button" onclick="moveStorePromotion(1)" aria-label="Promo berikutnya" class="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 transition hover:bg-white/20"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="emptyCatalog" class="hidden text-center py-20 text-slate-400">
+                    <i class="fa-solid fa-leaf text-5xl mb-4 opacity-50"></i>
+                    <p class="text-lg">Maaf, koleksi untuk kategori ini sedang kosong.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white py-14 font-poppins" aria-labelledby="trackHeading">
+            <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+                <div class="rounded-3xl border border-blush-100 bg-blush-50 p-7"><h2 id="trackHeading" class="font-playfair text-2xl font-bold">Lacak Pesanan</h2><p class="mt-2 text-sm text-slate-600">Masukkan nomor pesanan dan nomor telepon pemesan untuk melihat status terbaru.</p><form class="mt-5 grid gap-3" onsubmit="trackPublicOrder(event)"><input id="trackOrderNumber" required placeholder="Nomor pesanan, contoh RF-..." class="rounded-xl border border-slate-200 p-3"><input id="trackOrderPhone" required type="tel" placeholder="Nomor telepon pemesan" class="rounded-xl border border-slate-200 p-3"><button class="rounded-xl bg-blush-500 p-3 font-bold text-white">Lacak Pesanan</button></form><div id="trackOrderResult" class="mt-4 text-sm" aria-live="polite"></div></div>
+                <div class="rounded-3xl border border-slate-100 p-7"><h2 class="font-playfair text-2xl font-bold">Hubungi Kami</h2><p class="mt-2 text-sm text-slate-600">Kirim pertanyaan atau masukan kepada tim Roos &amp; Fleur.</p><form class="mt-5 grid gap-3" onsubmit="submitContactMessage(event)"><input id="contactName" required maxlength="120" placeholder="Nama" class="rounded-xl border border-slate-200 p-3"><input id="contactEmail" required type="email" placeholder="Email" class="rounded-xl border border-slate-200 p-3"><textarea id="contactMessage" required minlength="10" rows="3" placeholder="Pesan (minimal 10 karakter)" class="rounded-xl border border-slate-200 p-3"></textarea><button class="rounded-xl bg-slate-900 p-3 font-bold text-white">Kirim Pesan</button></form></div>
+            </div>
+        </section>
+        <section class="bg-blush-50 py-14 font-poppins"><div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8"><div><h2 class="font-playfair text-3xl font-bold">Cerita Pelanggan</h2><div id="publicReviews" class="mt-5 grid gap-3"><p class="text-sm text-slate-500">Memuat ulasan…</p></div><form onsubmit="submitPublicReview(event)" class="mt-4 grid gap-2 rounded-xl bg-white p-4 sm:grid-cols-[130px_1fr_auto]"><select id="publicReviewRating" class="rounded border p-2"><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option><option value="2">★★☆☆☆</option><option value="1">★☆☆☆☆</option></select><input id="publicReviewText" required minlength="10" maxlength="2000" placeholder="Tulis pengalaman Anda (masuk sebagai pelanggan)" class="rounded border p-2"><button class="rounded bg-blush-500 px-4 py-2 text-sm font-bold text-white">Kirim</button></form></div><div><h2 class="font-playfair text-3xl font-bold">Blog &amp; Berita</h2><div id="publicArticles" class="mt-5 grid gap-3"><p class="text-sm text-slate-500">Memuat artikel…</p></div></div></div></section>
+
+        <!-- CUSTOM BOUQUET BUILDER SECTION -->
+        <section id="custom-builder" class="py-20 bg-blush-50 border-t border-blush-100 font-poppins">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-blush-100 flex flex-col lg:flex-row">
+                    
+                    <!-- Left: Builder Form -->
+                    <div class="w-full lg:w-3/5 p-8 md:p-12">
+                        <span class="text-blush-500 font-semibold tracking-wider text-xs uppercase mb-2 block"><i class="fa-solid fa-wand-magic-sparkles"></i> Florist Interaktif Roos & Fleur</span>
+                        <h2 class="font-playfair text-3xl font-bold text-slate-900 mb-2">Rakit Buket Kustom</h2>
+                        <p class="text-slate-500 text-sm mb-8">Pilih jenis bunga, warna kertas pembungkus, dan pita sesuai selera Anda. Kami yang akan merangkainya.</p>
+
+                        <div class="space-y-8">
+                            <!-- Step 1: Bunga -->
+                            <div>
+                                <div class="flex justify-between items-end mb-3">
+                                    <h3 class="font-bold text-slate-800">1. Pilih Bunga Utama</h3>
+                                    <span class="text-xs text-blush-500 font-medium">*Harga per batang</span>
+                                </div>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="builderFlowerOptions"></div>
+                                <div class="mt-4 flex items-center gap-3">
+                                    <label class="text-sm font-medium text-slate-600">Jumlah Batang:</label>
+                                    <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden">
+                                        <button onclick="updateCustomQty(-1)" class="px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-600">-</button>
+                                        <input type="number" id="builderQty" value="5" min="1" max="50" class="w-12 text-center text-sm font-bold outline-none py-1 pointer-events-none" readonly>
+                                        <button onclick="updateCustomQty(1)" class="px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-600">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 & 3: Wrapper and Ribbon -->
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-3">2. Warna Kertas Wrapping</h3>
+                                <div class="flex flex-wrap gap-4" id="builderWrapOptions"></div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 mb-3">3. Pita & Aksesoris</h3>
+                                <select id="builderRibbon" class="w-full md:w-2/3 p-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blush-400 focus:border-blush-400 outline-none transition-all cursor-pointer" onchange="calculateCustomPrice()">
+                                    <option value="Satin Pink|15000">Pita Satin Pink (+Rp 15.000)</option>
+                                    <option value="Satin Putih|15000">Pita Satin Putih (+Rp 15.000)</option>
+                                    <option value="Tali Rami Vintage|10000">Tali Rami Vintage (+Rp 10.000)</option>
+                                    <option value="Pita Emas Premium|25000">Pita Emas Premium (+Rp 25.000)</option>
+                                    <option value="Tanpa Pita|0">Tanpa Pita (+Rp 0)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Preview & Price -->
+                    <div class="w-full lg:w-2/5 bg-slate-900 text-white p-8 md:p-12 flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-blush-500 rounded-full mix-blend-overlay filter blur-3xl opacity-30 transform translate-x-1/2 -translate-y-1/4"></div>
+                        
+                        <div class="relative z-10">
+                            <h3 class="font-playfair text-2xl font-bold mb-6 text-blush-100">Ringkasan Buket</h3>
+                            
+                            <div class="space-y-4 text-sm bg-white/10 p-5 rounded-2xl backdrop-blur-sm border border-white/20 shadow-inner">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="font-medium text-white" id="summaryFlowerName">Mawar Merah</p>
+                                        <p class="text-slate-400 text-xs" id="summaryFlowerCalc">5 batang x Rp 15.000</p>
+                                    </div>
+                                    <span class="font-semibold text-blush-200" id="summaryFlowerTotal">Rp 75.000</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-300" id="summaryWrapName">Wrapping Soft Pink</span>
+                                    <span class="font-semibold text-blush-200" id="summaryWrapPrice">Rp 20.000</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-300" id="summaryRibbonName">Pita Satin Pink</span>
+                                    <span class="font-semibold text-blush-200" id="summaryRibbonPrice">Rp 15.000</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-300">Biaya Jasa Rangkai</span>
+                                    <span class="font-semibold text-blush-200">Rp 35.000</span>
+                                </div>
+                                
+                                <div class="border-t border-white/20 pt-4 mt-4 flex justify-between items-center">
+                                    <span class="font-bold text-lg">Total Harga</span>
+                                    <span class="font-bold text-2xl text-blush-400" id="summaryGrandTotal">Rp 145.000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative z-10 mt-8 grid gap-3 sm:grid-cols-2">
+                            <button onclick="addCustomToStoreCart()" class="w-full py-4 bg-gradient-to-r from-blush-500 to-pink-600 hover:from-blush-600 hover:to-pink-700 text-white rounded-xl font-bold shadow-lg shadow-blush-500/30 transition-all flex items-center justify-center gap-2 group">
+                                <i class="fa-solid fa-cart-plus group-hover:scale-110 transition-transform"></i> Masukkan Keranjang
+                            </button>
+                            <button type="button" onclick="openStoreWhatsApp('custom')" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Tanya Florist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="bg-slate-900 text-slate-300 py-12 border-t-4 border-blush-500 font-poppins">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-seedling text-blush-500 text-2xl"></i>
+                        <span class="font-playfair text-2xl font-bold text-white tracking-wide">Roos & Fleur</span>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-4 leading-relaxed">Menyampaikan perasaan melalui keindahan bunga segar. Melayani pengiriman ke seluruh area kota dengan jaminan kesegaran.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blush-500 hover:text-white transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                        <button type="button" onclick="openStoreWhatsApp('umum')" aria-label="Chat WhatsApp Roos & Fleur" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blush-500 hover:text-white transition-colors"><i class="fa-brands fa-whatsapp"></i></button>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Layanan Pelanggan</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><button type="button" onclick="openCustomerInfo('about')" class="hover:text-blush-400 transition-colors text-left">Tentang Kami</button></li>
+                        <li><button type="button" onclick="openCustomerInfo('contact')" class="hover:text-blush-400 transition-colors text-left">Kontak Kami</button></li>
+                        <li><button type="button" onclick="openCustomerInfo('ordering')" class="hover:text-blush-400 transition-colors text-left">Cara Pemesanan</button></li>
+                        <li><button type="button" onclick="openCustomerInfo('shipping')" class="hover:text-blush-400 transition-colors text-left">Kebijakan Pengiriman</button></li>
+                        <li><button type="button" onclick="openCustomerInfo('faq')" class="hover:text-blush-400 transition-colors text-left">FAQ</button></li>
+                        <li><button type="button" onclick="openCustomerInfo('terms')" class="hover:text-blush-400 transition-colors text-left">Syarat dan Ketentuan</button></li>
+                        <li><button type="button" onclick="openCustomerInfo('privacy')" class="hover:text-blush-400 transition-colors text-left">Kebijakan Privasi</button></li>
+                        <li><a href="#admin" class="text-blush-500 hover:text-blush-400 font-bold"><i class="fa-solid fa-lock text-xs mr-1"></i> Admin Portal & Dashboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Pembayaran Aman</h4>
+                    <div class="flex gap-2 mb-4 text-2xl">
+                        <i class="fa-brands fa-cc-visa text-slate-400"></i>
+                        <i class="fa-brands fa-cc-mastercard text-slate-400"></i>
+                        <i class="fa-solid fa-qrcode text-slate-400"></i>
+                    </div>
+                    <p class="text-xs text-slate-500">© 2026 Roos & Fleur Florist. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <button type="button" onclick="openStoreWhatsApp('umum')" aria-label="Chat admin melalui WhatsApp" class="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200">
+            <i class="fa-brands fa-whatsapp text-xl"></i><span>Chat Admin</span>
+        </button>
+
+        <!-- CUSTOMER INFORMATION MODAL -->
+        <div id="customerInfoModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4" aria-hidden="true">
+            <button type="button" class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" aria-label="Tutup informasi" onclick="closeCustomerInfo()"></button>
+            <section role="dialog" aria-modal="true" aria-labelledby="customerInfoTitle" class="relative z-10 max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl">
+                <header class="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5 sm:px-8">
+                    <div>
+                        <p class="mb-1 text-xs font-bold uppercase tracking-[.18em] text-blush-500">Roos &amp; Fleur · Bantuan</p>
+                        <h2 id="customerInfoTitle" class="font-playfair text-2xl font-bold text-slate-900">Informasi Pelanggan</h2>
+                    </div>
+                    <button type="button" onclick="closeCustomerInfo()" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-blush-100 hover:text-blush-600" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+                </header>
+                <div id="customerInfoContent" class="max-h-[calc(85vh-90px)] overflow-y-auto px-6 py-6 text-sm leading-6 text-slate-600 sm:px-8"></div>
+            </section>
+        </div>
+
+        <!-- OVERLAY FOR MODALS -->
+        <div id="storeOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 fade-in hidden" onclick="closeStoreModals()"></div>
+
+        <!-- CART SIDEBAR -->
+        <div id="storeCartSidebar" class="fixed top-0 right-0 w-full sm:w-[400px] h-full bg-white z-50 shadow-2xl slide-in flex flex-col hidden font-poppins">
+            <div class="p-5 border-b border-blush-100 flex justify-between items-center bg-blush-50/50">
+                <h2 class="font-playfair font-bold text-xl text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-blush-500"></i> Keranjang Saya
+                </h2>
+                <button onclick="toggleStoreCart()" class="text-slate-400 hover:text-blush-600 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto">
+                <div class="text-center py-10 text-slate-400" id="emptyCartMsg">
+                    <i class="fa-solid fa-basket-shopping text-4xl mb-3 opacity-50"></i>
+                    <p>Keranjang Anda masih kosong</p>
+                </div>
+                <div id="storeCartItemsContainer" class="p-5 space-y-4"></div>
+                <div class="mx-5 mb-4 rounded-xl border border-blush-100 bg-blush-50 p-4">
+                    <p id="checkoutPromoHint" class="text-xs font-semibold text-slate-700 mb-2">Promo aktif akan ditampilkan di sini.</p>
+                    <div class="flex gap-2"><input id="promoCodeInput" type="text" maxlength="32" placeholder="Masukkan kode promo" class="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm uppercase"><button type="button" onclick="applyStorePromo()" class="rounded-lg bg-blush-500 px-3 py-2 text-sm font-bold text-white">Pakai</button></div>
+                    <p id="promoMessage" class="mt-2 text-xs" aria-live="polite"></p>
+                </div>
+            </div>
+
+            <div class="p-5 bg-slate-50 border-t border-slate-200">
+                <div class="flex justify-between text-sm mb-2 text-slate-600">
+                    <span>Subtotal</span>
+                    <span id="storeCartSubtotalText" class="font-medium">Rp 0</span>
+                </div>
+                <div class="flex justify-between text-sm mb-4 text-slate-600">
+                    <span>Estimasi Ongkir</span>
+                    <span class="font-medium text-sage-600">Dihitung saat checkout</span>
+                </div>
+                <div id="storeCartDiscountRow" class="hidden flex justify-between text-sm mb-3 text-emerald-700"><span>Diskon promo</span><span id="storeCartDiscountText">- Rp 0</span></div>
+                <div class="flex justify-between text-lg font-bold text-slate-900 mb-4 pt-4 border-t border-slate-200">
+                    <span>Total</span>
+                    <span id="storeCartTotalText" class="text-blush-600">Rp 0</span>
+                </div>
+                <button onclick="openCheckout()" id="btnCheckout" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-lg transition-colors flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Lanjut ke Pembayaran <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- CHECKOUT MODAL -->
+        <div id="checkoutModal" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white z-50 rounded-3xl shadow-2xl fade-in hidden max-h-[90vh] flex flex-col font-poppins">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-3xl">
+                <h2 class="font-playfair font-bold text-2xl text-slate-900">Detail Pengiriman</h2>
+                <button onclick="closeStoreModals()" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1">
+                <form id="checkoutForm" onsubmit="submitStoreOrder(event)" class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Pemesan</label>
+                            <input type="text" id="chkCustName" required placeholder="Nama Anda" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">No. WhatsApp</label>
+                            <input type="tel" id="chkCustPhone" required placeholder="0812..." class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-400 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-5">
+                        <h4 class="font-bold text-slate-800 mb-3"><i class="fa-solid fa-map-location-dot text-blush-500 mr-2"></i>Tujuan Pengiriman</h4>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Penerima Bunga</label>
+                            <input type="text" id="chkRecipient" required placeholder="Nama Penerima" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-400 outline-none mb-4 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Alamat Lengkap Pengiriman</label>
+                            <textarea id="chkAddress" required rows="2" placeholder="Jalan, RT/RW, Patokan..." class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-400 outline-none resize-none transition-all"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-slate-100 pt-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Kirim</label>
+                            <input type="date" required id="checkoutDate" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-400 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Metode Pengiriman</label>
+                            <select id="chkDeliveryMethod" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-400 outline-none cursor-pointer">
+                                <option value="Kurir Toko">Kurir Toko Khusus (Aman)</option>
+                                <option value="Ambil Sendiri">Ambil di Toko (Pickup)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-5">
+                        <h4 class="font-bold text-slate-800 mb-3"><i class="fa-solid fa-wallet text-blush-500 mr-2"></i>Pilih Metode Pembayaran</h4>
+                        <p class="text-xs text-slate-500 mb-3">Bayar dengan memindai QRIS setelah pesanan dibuat atau pilih COD untuk membayar saat pesanan diterima. Admin memeriksa pembayaran QRIS secara manual.</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="relative">
+                            <input type="radio" name="paymentMethod" id="payQRIS" value="QRIS / E-Wallet" class="peer hidden" checked>
+                                <label for="payQRIS" class="block cursor-pointer p-3 border border-slate-200 rounded-xl hover:border-blush-300 peer-checked:border-blush-500 peer-checked:bg-blush-50 peer-checked:ring-1 peer-checked:ring-blush-500 text-center transition-all">
+                                    <i class="fa-solid fa-qrcode text-2xl text-rose-500 mb-2"></i>
+                                    <p class="text-xs font-bold text-slate-700">QRIS</p>
+                                    <p class="text-[10px] text-slate-500">Scan QRIS</p>
+                                </label>
+                            </div>
+                            <div class="relative"><input type="radio" name="paymentMethod" id="payCOD" value="COD" class="peer hidden"><label for="payCOD" class="block h-full cursor-pointer p-3 border border-slate-200 rounded-xl hover:border-blush-300 peer-checked:border-blush-500 peer-checked:bg-blush-50 peer-checked:ring-1 peer-checked:ring-blush-500 text-center"><i class="fa-solid fa-money-bill-wave text-2xl text-emerald-600 mb-2"></i><p class="text-xs font-bold text-slate-700">COD</p><p class="text-[10px] text-slate-500">Bayar di tempat</p></label></div>
+                        </div>
+                        <div id="checkoutQrisPreview" class="mt-4 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-center">
+                            <p class="font-bold text-slate-800">Bayar dengan QRIS</p>
+                            <p class="mt-1 text-xs text-slate-600">Pindai kode ini dan bayar sesuai jumlah pesanan.</p>
+                            <img src="uploads/qris-code.jpg" alt="Kode QRIS Roos &amp; Fleur" class="mx-auto mt-3 h-56 w-56 rounded-xl bg-white object-contain p-2 shadow-sm">
+                            <p class="mt-2 text-sm text-slate-700">Jumlah pembayaran: <b id="checkoutQrisAmount" class="text-rose-600"></b></p>
+                            <p class="mt-1 text-xs text-slate-500">Admin akan memeriksa transaksi sebelum pesanan dinyatakan lunas.</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-5">
+                        <h4 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-envelope-open-text text-blush-500 mr-2"></i>Kartu Ucapan (Gratis)</h4>
+                        <textarea id="chkGreetingCard" rows="3" placeholder="Contoh: Happy Birthday, I love you! Dari: Pengagum Rahasiamu" class="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-400 outline-none resize-none transition-all"></textarea>
+                    </div>
+
+                    <div class="pt-4 flex justify-end gap-3">
+                        <button type="button" onclick="closeStoreModals()" class="px-5 py-3 text-slate-600 font-semibold hover:bg-slate-100 rounded-xl transition-colors">Batal</button>
+                        <button type="submit" class="px-6 py-3 bg-blush-500 hover:bg-blush-600 text-white font-bold rounded-xl shadow-lg transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-lock"></i> Bayar Sekarang
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- STOREFRONT TOAST -->
+        <div id="storefrontToast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-[60] bg-slate-900 text-white px-5 py-3 rounded-full shadow-2xl transition-all duration-300 translate-y-20 opacity-0 flex items-center gap-3 text-sm font-medium font-poppins">
+            <i class="fa-solid fa-circle-check text-blush-400"></i>
+            <span id="storeToastMsg">Pesan</span>
+        </div>
+    </div> <!-- END STOREFRONT -->
+
+    <div id="authModal" class="fixed inset-0 z-[80] hidden items-center justify-center overflow-y-auto overscroll-contain bg-slate-900/60 p-4 backdrop-blur-sm">
+        <div class="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-3xl bg-white p-7 shadow-2xl font-poppins">
+            <div class="sticky top-0 z-10 -mx-7 -mt-7 mb-5 flex items-center justify-between rounded-t-3xl bg-white px-7 pt-7"><div><p class="text-xs uppercase tracking-wider text-blush-500 font-bold">Roos & Fleur</p><h2 id="authTitle" class="font-playfair text-2xl font-bold text-slate-900">Masuk</h2></div><button onclick="closeAuth()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+            <p id="authHint" class="text-sm text-slate-500 mb-5"></p><div id="authMessage" class="hidden rounded-xl p-3 mb-4 text-sm"></div>
+            <form id="authForm" onsubmit="submitAuth(event)" class="space-y-3"><input id="authName" class="hidden w-full p-3 rounded-xl border" placeholder="Nama lengkap"><input id="authEmail" type="email" required class="w-full p-3 rounded-xl border" placeholder="Email"><input id="authPhone" type="tel" class="hidden w-full p-3 rounded-xl border" placeholder="Nomor WhatsApp"><input id="authPassword" type="password" required minlength="8" class="w-full p-3 rounded-xl border" placeholder="Kata sandi (minimal 8 karakter)"><button id="authSubmit" class="w-full rounded-xl bg-blush-500 p-3 font-bold text-white hover:bg-blush-600">Masuk</button></form>
+            <div id="authOrders" class="hidden mt-4 border-t pt-4 space-y-2"></div>
+            <div class="mt-4 flex justify-between text-sm"><button id="authToggle" onclick="toggleAuthMode()" class="text-blush-600 font-semibold">Buat akun pelanggan</button><button id="authLogout" onclick="logoutUser()" class="hidden text-rose-600 font-semibold">Keluar</button></div>
+        </div>
+    </div>
+
+    <div id="orderSuccessModal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-7 shadow-2xl font-poppins">
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"><i class="fa-solid fa-check text-2xl"></i></div>
+            <h2 class="text-center font-playfair text-2xl font-bold text-slate-900">Pesanan Berhasil Dibuat</h2>
+            <p class="mt-2 text-center text-sm text-slate-500">Nomor pesanan: <b id="successOrderNumber" class="text-slate-800"></b></p>
+            <div class="my-5 rounded-2xl bg-slate-50 p-4 text-sm"><div class="flex justify-between"><span>Total</span><b id="successOrderTotal"></b></div><div class="mt-2 flex justify-between"><span>Metode</span><b id="successOrderMethod"></b></div><p id="successPaymentNote" class="mt-3 text-xs text-slate-500">Pembayaran akan menunggu konfirmasi.</p></div>
+            <div id="qrisPaymentPanel" class="hidden mb-4 rounded-2xl border border-cyan-100 bg-cyan-50 p-4 text-center">
+                <p class="font-bold text-slate-800">Bayar dengan QRIS</p>
+                <p class="mt-1 text-sm text-slate-600">Pindai kode ini dan masukkan jumlah pembayaran tepat seperti total pesanan.</p>
+                <img src="uploads/qris-code.jpg" alt="Kode QRIS Roos &amp; Fleur" class="mx-auto mt-3 h-60 w-60 rounded-xl bg-white object-contain p-2 shadow-sm">
+                <p class="mt-3 text-sm text-slate-700">Jumlah yang dibayar: <b id="qrisPaymentAmount" class="text-lg text-rose-600"></b></p>
+                <p class="mt-2 text-xs text-slate-500">Pesanan tetap berstatus menunggu pembayaran sampai admin memeriksa transaksi.</p>
+            </div>
+            <button id="qrisDoneButton" onclick="closeOrderSuccess()" class="w-full rounded-xl bg-blush-500 p-3 font-bold text-white hover:bg-blush-600">Tutup</button>
+            <button onclick="openMyOrders()" class="mt-2 w-full rounded-xl border p-3 font-semibold text-slate-600">Lihat Pesanan Saya</button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!--           ADMIN ERP APPLICATION            -->
+    <!-- ========================================== -->
+    <div id="adminApp" class="hidden flex flex-col md:flex-row min-h-screen font-jakarta">
+        
+        <!-- SIDEBAR NAV -->
+        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col justify-between border-r border-slate-800 z-20">
+            <div>
+                <!-- Logo Header -->
+                <div class="p-5 flex items-center justify-between border-b border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg shadow-rose-500/30">
+                            <i class="fa-solid font-bold text-xl fa-spa"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-lg text-white leading-none">Roos & Fleur</h1>
+                            <span class="text-xs text-rose-400 font-medium">Admin Dashboard</span>
+                        </div>
+                    </div>
+                    <button id="mobileMenuBtn" class="md:hidden text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav id="navMenu" class="hidden md:block p-4 space-y-1">
+                    <p class="px-3 text-[10px] font-semibold tracking-wider text-slate-500 uppercase mb-2">Utama</p>
+                    <button onclick="switchTab('dashboard')" class="nav-btn active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="dashboard">
+                        <i class="fa-solid fa-chart-pie w-5 text-center text-rose-500"></i> Dashboard
+                    </button>
+                    <button onclick="switchTab('pos')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="pos">
+                        <i class="fa-solid fa-cash-register w-5 text-center text-emerald-500"></i> POS & Penjualan
+                    </button>
+                    
+                    <p class="px-3 text-[10px] font-semibold tracking-wider text-slate-500 uppercase mt-5 mb-2">Katalog & Toko Online</p>
+                    <button onclick="switchTab('catalogadmin')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="catalogadmin">
+                        <i class="fa-solid fa-tags w-5 text-center text-pink-400"></i> Kelola Varian Buket
+                    </button>
+                    <button onclick="switchTab('promotions')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="promotions">
+                        <i class="fa-solid fa-ticket w-5 text-center text-amber-400"></i> Kelola Promo
+                    </button>
+
+                    <p class="px-3 text-[10px] font-semibold tracking-wider text-slate-500 uppercase mt-5 mb-2">Operasional</p>
+                    <button onclick="switchTab('production')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="production">
+                        <i class="fa-solid fa-scissors w-5 text-center text-amber-500"></i> Produksi & Buket
+                    </button>
+                    <button onclick="switchTab('inventory')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="inventory">
+                        <i class="fa-solid fa-boxes-stacked w-5 text-center text-blue-500"></i> Stok & Bahan Baku
+                    </button>
+                    <button onclick="switchTab('purchasing')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="purchasing">
+                        <i class="fa-solid fa-truck-ramp-box w-5 text-center text-indigo-500"></i> Pembelian & Supplier
+                    </button>
+
+                    <p class="px-3 text-[10px] font-semibold tracking-wider text-slate-500 uppercase mt-5 mb-2">Pelanggan & Keuangan</p>
+                    <button onclick="switchTab('crm')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="crm">
+                        <i class="fa-solid fa-users w-5 text-center text-purple-500"></i> CRM & Event
+                    </button>
+                    <button onclick="switchTab('finance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="finance">
+                        <i class="fa-solid fa-wallet w-5 text-center text-teal-500"></i> Keuangan & Kas
+                    </button>
+                    <button onclick="switchTab('services')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-tab="services"><i class="fa-solid fa-sliders w-5 text-center text-amber-300"></i> Layanan & Pengaturan</button>
+                    
+                    <div class="mt-8 border-t border-slate-800 pt-4">
+                        <a href="#store" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-900/30 transition-all">
+                            <i class="fa-solid fa-store w-5 text-center"></i> Ke Toko Publik
+                        </a>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-slate-800 hidden md:flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-semibold">RF</div>
+                <div class="overflow-hidden">
+                    <h4 class="text-xs font-semibold text-white truncate">Roos & Fleur Florist</h4>
+                    <p class="text-[11px] text-slate-500 truncate">Admin Headquarters</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+            <!-- Top App Bar -->
+            <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <h2 id="pageTitle" class="text-xl font-bold text-slate-800">Dashboard Overview</h2>
+                    <button onclick="logoutUser()" class="ml-auto mr-3 text-xs font-semibold text-rose-600 hover:text-rose-700"><i class="fa-solid fa-arrow-right-from-bracket mr-1"></i>Keluar</button>
+                    <span id="liveClock" class="hidden sm:inline-block px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-600 rounded-md">--:--:--</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="#store" class="px-3 py-1.5 text-xs font-bold bg-blush-50 text-blush-600 rounded-lg hover:bg-blush-100 transition-colors flex items-center gap-1.5 border border-blush-200">
+                        <i class="fa-solid fa-store"></i> Lihat Toko Online
+                    </a>
+                    <button onclick="resetDataDemo()" class="text-xs text-slate-500 hover:text-rose-600 font-medium flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-lg hover:border-rose-200 transition-colors">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Demo
+                    </button>
+                    <button onclick="resetAllOrders()" class="text-xs text-rose-600 hover:text-white font-medium flex items-center gap-1.5 px-3 py-1.5 border border-rose-200 rounded-lg hover:bg-rose-600 transition-colors">
+                        <i class="fa-solid fa-trash-can"></i> Hapus Semua Pesanan
+                    </button>
+                </div>
+            </header>
+
+            <!-- VIEW CONTAINER -->
+            <div class="p-4 sm:p-6 lg:p-8 flex-1">
+
+                <!-- SECTION 1: DASHBOARD OVERVIEW -->
+                <section id="dashboardView" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Pendapatan</span>
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-rupiah-sign text-lg"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-3" id="kpiRevenue">Rp 0</h3>
+                            <p class="text-xs text-emerald-600 mt-1 flex items-center gap-1 font-medium">
+                                <i class="fa-solid fa-arrow-trend-up"></i> +14.5% dari bulan lalu
+                            </p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pesanan Hari Ini</span>
+                                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-shopping-bag text-lg"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-3" id="kpiTodayOrders">0</h3>
+                            <p class="text-xs text-slate-500 mt-1" id="kpiPendingProd">0 Butuh Dirangkai</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Varian Katalog Aktif</span>
+                                <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-tags text-lg"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-3" id="kpiCatalogCount">0 Produk</h3>
+                            <p class="text-xs text-pink-600 mt-1 font-medium">Terhubung real-time ke web</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Stok Bahan Baku</span>
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-seedling text-lg"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-3" id="kpiActiveStock">0 Items</h3>
+                            <p class="text-xs text-amber-600 mt-1 font-medium flex items-center gap-1" id="kpiLowStockAlert">
+                                <i class="fa-solid fa-triangle-exclamation"></i> 0 Menipis
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-lg">Tren Pendapatan & Penjualan</h3>
+                                    <p class="text-xs text-slate-500">Performa penjualan toko mingguan</p>
+                                </div>
+                                <span class="text-xs font-medium bg-slate-100 text-slate-600 px-3 py-1 rounded-full">7 Hari Terakhir</span>
+                            </div>
+                            <div class="h-64"><canvas id="revenueChart"></canvas></div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl text-white shadow-md">
+                                <h3 class="font-bold text-lg mb-2">Aksi Cepat Admin</h3>
+                                <p class="text-xs text-slate-300 mb-4">Kelola katalog dan tambah buket baru secara instan.</p>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="switchTab('catalogadmin'); openAddBouquetModal();" class="p-3 bg-white/10 hover:bg-white/20 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors border border-white/10 text-center">
+                                        <i class="fa-solid fa-plus-circle text-rose-400 text-xl"></i>
+                                        <span class="text-xs font-medium">+ Tambah Buket</span>
+                                    </button>
+                                    <button onclick="switchTab('pos')" class="p-3 bg-white/10 hover:bg-white/20 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors border border-white/10 text-center">
+                                        <i class="fa-solid fa-cash-register text-emerald-400 text-xl"></i>
+                                        <span class="text-xs font-medium">Buat Pesanan</span>
+                                    </button>
+                                    <button onclick="switchTab('production')" class="p-3 bg-white/10 hover:bg-white/20 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors border border-white/10 text-center">
+                                        <i class="fa-solid fa-list-check text-amber-400 text-xl"></i>
+                                        <span class="text-xs font-medium">Antrean Buket</span>
+                                    </button>
+                                    <button onclick="openExpenseModal()" class="p-3 bg-white/10 hover:bg-white/20 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors border border-white/10 text-center">
+                                        <i class="fa-solid fa-receipt text-blue-400 text-xl"></i>
+                                        <span class="text-xs font-medium">Catat Kas Keluar</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                        <i class="fa-solid fa-cake-candles text-rose-500"></i> Event Pelanggan Dekat
+                                    </h4>
+                                    <a href="#" onclick="switchTab('crm')" class="text-xs text-rose-600 hover:underline font-medium">Lihat Semua</a>
+                                </div>
+                                <div id="dashboardEventList" class="space-y-2.5 text-xs"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders Table -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                            <div>
+                                <h3 class="font-bold text-slate-800">Pesanan Buket Terbaru</h3>
+                                <p class="text-xs text-slate-500">Status rakitan dan pengiriman pesanan aktif</p>
+                            </div>
+                            <button onclick="switchTab('pos')" class="px-3 py-1.5 text-xs font-medium bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition-colors">
+                                Lihat Semua Penjualan
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="bg-slate-50 text-xs text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-100">
+                                    <tr>
+                                        <th class="p-4">ID Pesanan</th>
+                                        <th class="p-4">Pelanggan</th>
+                                        <th class="p-4">Detail Buket</th>
+                                        <th class="p-4">Tgl Kirim</th>
+                                        <th class="p-4">Bayar</th>
+                                        <th class="p-4">Status Produksi</th>
+                                        <th class="p-4 text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersTable" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: ADMIN CATALOG MANAGER (TAMBAH BUKET & FOTO) -->
+                <section id="catalogadminView" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-tags text-rose-500"></i> Kelola Varian Buket & Katalog Storefront
+                            </h3>
+                            <p class="text-xs text-slate-500">Tambah varian buket baru, masukkan foto (atau gunakan foto default bunga dumy 1.jpeg), nama, kategori, dan harga. Langsung tampil real-time di web penjualan online!</p>
+                        </div>
+                        <button onclick="openAddBouquetModal()" class="px-5 py-2.5 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-sm"></i> Tambah Varian Buket Baru
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                            <input type="text" id="adminCatalogSearch" onkeyup="renderAdminCatalogTable()" placeholder="Cari nama buket/kategori..." class="text-xs px-3 py-2 border border-slate-200 rounded-lg w-72 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                            <span class="text-xs text-slate-500" id="adminCatalogCount">Total 0 Varian</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-100">
+                                    <tr>
+                                        <th class="p-4">Foto Produk</th>
+                                        <th class="p-4">Nama Varian</th>
+                                        <th class="p-4">Kategori</th>
+                                        <th class="p-4">Harga Jual</th>
+                                        <th class="p-4">Label Tag</th>
+                                        <th class="p-4 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminCatalogTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PROMOTION MANAGEMENT -->
+                <section id="promotionsView" class="hidden space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div><h3 class="text-lg font-bold text-slate-800">Promo Toko Online</h3><p class="text-sm text-slate-500">Atur banner dan aturan kode diskon yang dipakai saat checkout.</p></div>
+                        <button onclick="openPromotionForm()" class="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-rose-700"><i class="fa-solid fa-plus mr-2"></i>Tambah Promo</button>
+                    </div>
+                    <div id="promotionAdminMessage" class="hidden rounded-xl px-4 py-3 text-sm" aria-live="polite"></div>
+                    <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+                        <table class="w-full text-left text-sm text-slate-600"><thead class="bg-slate-50 text-xs uppercase text-slate-500"><tr><th class="p-4">Promo</th><th class="p-4">Aturan Diskon</th><th class="p-4">Status</th><th class="p-4 text-right">Aksi</th></tr></thead><tbody id="promotionAdminTable" class="divide-y divide-slate-100"><tr><td colspan="4" class="p-6 text-center text-slate-400">Memuat promo…</td></tr></tbody></table>
+                    </div>
+                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-5 text-amber-900">Kode promo harus unik. Batas maksimum diskon 0 berarti tanpa batas. Promo nonaktif tidak tampil di toko dan tidak dapat dipakai saat checkout.</div>
+                </section>
+
+                <!-- SECTION 2: POS & ORDER MANAGEMENT -->
+                <section id="posView" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-7 space-y-6">
+                            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+                                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <div>
+                                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                            <i class="fa-solid fa-wand-magic-sparkles text-rose-500"></i> Kasir Buket Custom & Catalog
+                                        </h3>
+                                        <p class="text-xs text-slate-500">Rakit buket custom pilihan bunga, wrapper & pita</p>
+                                    </div>
+                                    <span class="px-2.5 py-1 text-xs font-medium bg-rose-50 text-rose-600 rounded-md">BOM Calculator Active</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button type="button" id="tabModeCustom" onclick="setPOSMode('custom')" class="flex-1 py-2 rounded-xl text-xs font-bold border border-rose-500 bg-rose-50 text-rose-600">
+                                        <i class="fa-solid fa-fan mr-1"></i> Custom Bouquet
+                                    </button>
+                                    <button type="button" id="tabModePreset" onclick="setPOSMode('preset')" class="flex-1 py-2 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100">
+                                        <i class="fa-solid fa-store mr-1"></i> Katalog Buket Ready
+                                    </button>
+                                </div>
+                                
+                                <div id="customBouquetBuilderAdmin" class="space-y-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bunga Utama (Batang)</label>
+                                            <select id="posFlowerSelect" class="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-400 outline-none"></select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Jumlah Batang Bunga</label>
+                                            <input type="number" id="posFlowerQty" value="5" min="1" class="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-400 outline-none">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Kertas Wrapping</label>
+                                            <select id="posWrapSelect" class="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-400 outline-none"></select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Pita & Aksesoris</label>
+                                            <select id="posRibbonSelect" class="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-400 outline-none"></select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Pesan Kartu Ucapan (Greeting Card)</label>
+                                        <textarea id="posGreetingCard" rows="2" placeholder="Contoh: Happy Graduation Dear Sarah! Wishing you all success..." class="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-400 outline-none resize-none"></textarea>
+                                    </div>
+                                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                        <div class="text-xs">
+                                            <span class="text-slate-500">Estimasi HPP (BOM Raw):</span>
+                                            <p id="posCustomHPP" class="font-bold text-slate-700">Rp 0</p>
+                                        </div>
+                                        <button type="button" onclick="addCustomToAdminCart()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold shadow-md shadow-rose-500/20 transition-all">
+                                            <i class="fa-solid fa-cart-plus mr-1"></i> Tambahkan Buket Custom
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="presetBouquetCatalogAdmin" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                            </div>
+                            
+                            <!-- Search Table inside POS -->
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div><h3 class="font-bold text-slate-800">Daftar Semua Pesanan</h3><p class="mt-1 text-[10px] text-slate-500">Pesanan online tersimpan di database. Perbarui status pembayaran dan pengiriman di sini.</p></div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" id="orderSearchInput" onkeyup="renderOrdersTable()" placeholder="Cari nama/ID..." class="text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400">
+                                        <select id="orderStatusFilter" onchange="renderOrdersTable()" class="text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400">
+                                            <option value="ALL">Semua Status</option>
+                                            <option value="Pending">Pending</option>
+                                            <option value="Dirangkai">Dirangkai</option>
+                                            <option value="Siap">Siap</option>
+                                            <option value="Dikirim">Dikirim</option>
+                                            <option value="Selesai">Selesai</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-xs text-slate-600">
+                                        <thead class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-100">
+                                            <tr>
+                                                <th class="p-3">ID</th><th class="p-3">Pelanggan</th><th class="p-3">Item</th>
+                                                <th class="p-3">Status</th><th class="p-3">Bayar</th><th class="p-3 text-right">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="posAllOrdersTable" class="divide-y divide-slate-100"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 space-y-6">
+                            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5 sticky top-20">
+                                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                                        <i class="fa-solid fa-receipt text-emerald-500"></i> Struk / Keranjang Aktif
+                                    </h3>
+                                    <button onclick="clearAdminCart()" class="text-xs text-rose-500 hover:underline font-medium">Kosongkan</button>
+                                </div>
+                                <div id="adminCartItemsList" class="space-y-3 max-h-56 overflow-y-auto pr-1"></div>
+                                <div class="space-y-3 pt-3 border-t border-slate-100">
+                                    <p class="text-xs font-bold text-slate-700 uppercase tracking-wider">Detail Pengiriman</p>
+                                    <div>
+                                        <label class="block text-[11px] font-medium text-slate-500 mb-1">Pilih Pelanggan</label>
+                                        <select id="posCustomerSelect" class="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-400 outline-none"></select>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-[11px] font-medium text-slate-500 mb-1">Tanggal Kirim</label>
+                                            <input type="date" id="posDeliveryDate" class="w-full text-xs p-2 border border-slate-200 rounded-lg outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-medium text-slate-500 mb-1">Metode Kirim</label>
+                                            <select id="posDeliveryMethod" onchange="updateAdminCartUI()" class="w-full text-xs p-2 border border-slate-200 rounded-lg outline-none">
+                                                <option value="Kurir Toko">Kurir Toko</option><option value="Ambil di Toko">Ambil di Toko</option><option value="GoSend/GrabExpress">GoSend/GrabExpress</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-[11px] font-medium text-slate-500 mb-1">Status Bayar</label>
+                                            <select id="posPaymentStatus" class="w-full text-xs p-2 border border-slate-200 rounded-lg outline-none">
+                                                <option value="Lunas">Lunas</option><option value="Belum Lunas">Belum Lunas</option><option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-medium text-slate-500 mb-1">Metode Bayar</label>
+                                            <select id="posPaymentMethod" class="w-full text-xs p-2 border border-slate-200 rounded-lg outline-none">
+                                                <option value="QRIS / E-Wallet">QRIS</option>
+                                                <option value="COD">COD / Tunai di Tempat</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-xl space-y-2 border border-slate-100">
+                                    <div class="flex justify-between text-xs text-slate-500">
+                                        <span>Subtotal</span><span id="adminCartSubtotal">Rp 0</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-slate-500">
+                                        <span>Biaya Kirim</span><span id="posShippingCost">Rp 0</span>
+                                    </div>
+                                    <div class="flex justify-between text-base font-bold text-slate-800 pt-2 border-t border-slate-200">
+                                        <span>Total Akhir</span><span id="adminCartTotal" class="text-rose-600">Rp 0</span>
+                                    </div>
+                                </div>
+                                <button onclick="processAdminCheckout()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-check-circle"></i> Simpan Pesanan Baru
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 3: INVENTORY -->
+                <section id="inventoryView" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Stok Bunga & Bahan Baku (BOM)</h3>
+                            <p class="text-xs text-slate-500">Kelola ketersediaan bunga segar, wrapping paper, pita, dan pot/aksesoris</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="openNewStockModal()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-sm transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> Tambah Item
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                        <button onclick="filterStockCategory('ALL')" class="stock-cat-btn active px-4 py-2 bg-slate-900 text-white text-xs font-semibold rounded-xl transition-all">Semua Bahan</button>
+                        <button onclick="filterStockCategory('Bunga Segar')" class="stock-cat-btn px-4 py-2 bg-white text-slate-600 border border-slate-200 text-xs font-semibold rounded-xl hover:bg-slate-50">Bunga Segar</button>
+                        <button onclick="filterStockCategory('Wrapping Paper')" class="stock-cat-btn px-4 py-2 bg-white text-slate-600 border border-slate-200 text-xs font-semibold rounded-xl hover:bg-slate-50">Kertas Wrapping</button>
+                        <button onclick="filterStockCategory('Pita & Aksesoris')" class="stock-cat-btn px-4 py-2 bg-white text-slate-600 border border-slate-200 text-xs font-semibold rounded-xl hover:bg-slate-50">Pita & Tali</button>
+                        <button onclick="filterStockCategory('Perlengkapan')" class="stock-cat-btn px-4 py-2 bg-white text-slate-600 border border-slate-200 text-xs font-semibold rounded-xl hover:bg-slate-50">Perlengkapan</button>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                            <input type="text" id="stockSearchInput" onkeyup="renderInventoryTable()" placeholder="Cari bahan..." class="text-xs px-3 py-2 border border-slate-200 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                            <span class="text-xs text-slate-500" id="stockSummaryCount">Menampilkan 0 items</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-100">
+                                    <tr>
+                                        <th class="p-4">SKU</th><th class="p-4">Nama</th><th class="p-4">Kategori</th>
+                                        <th class="p-4">Sisa Stok</th><th class="p-4">Harga Beli</th><th class="p-4">Harga Jual</th>
+                                        <th class="p-4">Kadaluarsa</th><th class="p-4 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventoryTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="mb-4"><h4 class="font-bold text-slate-800">Resep Produk (BOM)</h4><p class="text-xs text-slate-500">Stok bahan baku pada resep akan berkurang otomatis saat pembayaran pesanan lunas.</p></div><form onsubmit="saveBOMItem(event)" class="grid gap-3 sm:grid-cols-[1fr_1fr_130px_auto]"><select id="bomProduct" required class="rounded-lg border p-2.5 text-sm"><option value="">Pilih produk</option></select><select id="bomMaterial" required class="rounded-lg border p-2.5 text-sm"><option value="">Pilih bahan baku</option></select><input id="bomQuantity" type="number" min="0.01" step="0.01" required placeholder="Kebutuhan/unit" class="rounded-lg border p-2.5 text-sm"><button class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-bold text-white">Tambah Resep</button></form><div class="mt-4 overflow-x-auto"><table class="w-full text-left text-xs"><thead class="text-slate-500"><tr><th class="p-2">Produk</th><th class="p-2">Bahan</th><th class="p-2">Kebutuhan per unit</th><th class="p-2 text-right">Aksi</th></tr></thead><tbody id="bomTableBody" class="divide-y"></tbody></table></div></div>
+                </section>
+
+                <!-- SECTION 4: PRODUCTION KANBAN -->
+                <section id="productionView" class="hidden space-y-6">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Papan Perakitan Buket (Florist Kanban)</h3>
+                            <p class="text-xs text-slate-500">Pantau proses perangkaian bunga kustom dari Florist hingga Siap Kirim</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="bg-slate-100/70 p-4 rounded-2xl border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between font-bold text-xs text-slate-700 uppercase tracking-wider">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hourglass-start text-amber-500"></i> Antrean</span>
+                                <span id="countPending" class="bg-slate-200 px-2 py-0.5 rounded-full text-[11px]">0</span>
+                            </div>
+                            <div id="kanbanPending" class="space-y-3 min-h-[300px]"></div>
+                        </div>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 space-y-3">
+                            <div class="flex items-center justify-between font-bold text-xs text-blue-800 uppercase tracking-wider">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-scissors text-blue-500"></i> Proses Dirangkai</span>
+                                <span id="countProgress" class="bg-blue-100 px-2 py-0.5 rounded-full text-[11px]">0</span>
+                            </div>
+                            <div id="kanbanProgress" class="space-y-3 min-h-[300px]"></div>
+                        </div>
+                        <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 space-y-3">
+                            <div class="flex items-center justify-between font-bold text-xs text-emerald-800 uppercase tracking-wider">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Siap Kirim</span>
+                                <span id="countReady" class="bg-emerald-100 px-2 py-0.5 rounded-full text-[11px]">0</span>
+                            </div>
+                            <div id="kanbanReady" class="space-y-3 min-h-[300px]"></div>
+                        </div>
+                        <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100 space-y-3">
+                            <div class="flex items-center justify-between font-bold text-xs text-purple-800 uppercase tracking-wider">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-purple-500"></i> Dikirim</span>
+                                <span id="countDelivery" class="bg-purple-100 px-2 py-0.5 rounded-full text-[11px]">0</span>
+                            </div>
+                            <div id="kanbanDelivery" class="space-y-3 min-h-[300px]"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 5: PURCHASING -->
+                <section id="purchasingView" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Pembelian & Supplier</h3>
+                            <p class="text-xs text-slate-500">Manajemen pemasok kebun bunga & Purchase Order (PO)</p>
+                        </div>
+                        <button onclick="openPOModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition-colors flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus-circle"></i> Buat PO
+                        </button>
+                        <button onclick="openSupplierModal()" class="px-4 py-2 border border-indigo-200 text-indigo-700 text-xs font-bold rounded-xl">Tambah Supplier</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="suppliersCardGrid"></div>
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-100"><h4 class="font-bold text-slate-800 text-sm">Riwayat PO</h4></div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-100">
+                                    <tr><th class="p-3">Kode PO</th><th class="p-3">Supplier</th><th class="p-3">Item</th><th class="p-3 text-right">Total Biaya</th><th class="p-3">Status</th><th class="p-3 text-right">Aksi</th></tr>
+                                </thead>
+                                <tbody id="poTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 6: CRM -->
+                <section id="crmView" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Pelanggan & Event Special</h3>
+                            <p class="text-xs text-slate-500">Database pelanggan, pengingat ultah & loyalitas</p>
+                        </div>
+                        <button onclick="openCustomerModal()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-sm transition-colors flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-plus"></i> Tambah Pelanggan
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                                <input type="text" id="crmSearchInput" onkeyup="renderCRMTable()" placeholder="Cari pelanggan..." class="text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none">
+                                <span class="text-xs text-slate-500" id="crmTotalCustomers">0 Pelanggan</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-600">
+                                    <thead class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-100">
+                                        <tr><th class="p-3">Nama</th><th class="p-3">Kontak WA</th><th class="p-3">Event</th><th class="p-3">Total Belanja</th><th class="p-3">Interaksi Terakhir</th><th class="p-3 text-right">Aksi</th></tr>
+                                    </thead>
+                                    <tbody id="crmTableBody" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i class="fa-solid fa-bell text-rose-500"></i> Pengingat Event</h4>
+                            <div id="crmReminderList" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 7: FINANCE -->
+                <section id="financeView" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Total Pemasukan</span>
+                            <h3 id="financeIncome" class="text-2xl font-bold text-emerald-600 mt-2">Rp 0</h3>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Total Pengeluaran</span>
+                            <h3 id="financeExpense" class="text-2xl font-bold text-rose-600 mt-2">Rp 0</h3>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Estimasi Laba Bersih</span>
+                            <h3 id="financeNetProfit" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-slate-800 text-base">Arus Kas & Jurnal</h3>
+                            <button onclick="openExpenseModal()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> Catat Pengeluaran
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-100">
+                                    <tr><th class="p-3">Tanggal</th><th class="p-3">Keterangan</th><th class="p-3">Tipe</th><th class="p-3 text-right">Nominal</th></tr>
+                                </thead>
+                                <tbody id="financeTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                <section id="servicesView" class="hidden space-y-6">
+                    <article class="rounded-2xl border bg-white p-5"><h3 class="font-bold text-slate-800">Analitik Toko</h3><div class="mt-4 grid gap-3 sm:grid-cols-3"><div class="rounded-xl bg-slate-50 p-4"><p class="text-xs text-slate-500">Pengunjung unik hari ini</p><b id="analyticsVisitors" class="text-xl">0</b></div><div class="rounded-xl bg-slate-50 p-4"><p class="text-xs text-slate-500">Penjualan lunas</p><b id="analyticsSales" class="text-xl">Rp 0</b></div><div class="rounded-xl bg-slate-50 p-4"><p class="text-xs text-slate-500">Produk terlaris</p><b id="analyticsBestSeller" class="text-xl">—</b><p id="analyticsUnits" class="text-xs text-slate-500"></p></div></div></article>
+                    <div class="grid gap-5 xl:grid-cols-2">
+                        <article class="rounded-2xl border bg-white p-5"><h3 class="font-bold text-slate-800">Pengembalian &amp; Penukaran</h3><div id="adminReturnRequests" class="mt-4 space-y-3 text-sm">Memuat permintaan…</div></article>
+                        <article class="rounded-2xl border bg-white p-5"><h3 class="font-bold text-slate-800">Pesan Kontak Masuk</h3><div id="adminContactMessages" class="mt-4 max-h-96 space-y-3 overflow-auto text-sm">Memuat pesan…</div></article>
+                        <article class="rounded-2xl border bg-white p-5"><h3 class="font-bold text-slate-800">Moderasi Testimoni</h3><div id="adminReviewList" class="mt-4 space-y-3 text-sm">Memuat ulasan…</div></article>
+                        <article class="rounded-2xl border bg-white p-5"><h3 class="font-bold text-slate-800">Pengaturan Website &amp; Kontak</h3><form class="mt-4 grid gap-3" onsubmit="saveStoreSettings(event)"><input id="settingStoreName" required placeholder="Nama toko" class="rounded-lg border p-2.5"><input id="settingStoreEmail" required type="email" placeholder="Email" class="rounded-lg border p-2.5"><input id="settingStorePhone" required placeholder="Telepon" class="rounded-lg border p-2.5"><input id="settingStoreAddress" required placeholder="Alamat" class="rounded-lg border p-2.5"><input id="settingDeliveryFee" required type="number" min="0" placeholder="Biaya pengiriman" class="rounded-lg border p-2.5"><input id="settingLogoUrl" type="url" placeholder="URL logo (opsional)" class="rounded-lg border p-2.5"><input id="settingFaviconUrl" type="url" placeholder="URL favicon (opsional)" class="rounded-lg border p-2.5"><input id="settingPaymentMethods" value="QRIS, COD" readonly class="rounded-lg border bg-slate-50 p-2.5 text-slate-600"><p class="text-xs text-slate-500">Metode pembayaran toko: QRIS dan COD.</p><button class="rounded-lg bg-slate-900 px-4 py-2.5 font-bold text-white">Simpan Pengaturan</button></form></article>
+                        <article class="rounded-2xl border bg-white p-5"><h3 class="font-bold text-slate-800">Kelola Blog</h3><form class="mt-4 grid gap-3" onsubmit="saveBlogArticle(event)"><input id="articleTitle" required maxlength="180" placeholder="Judul artikel" class="rounded-lg border p-2.5"><input id="articleSummary" required placeholder="Ringkasan" class="rounded-lg border p-2.5"><textarea id="articleContent" required rows="4" placeholder="Isi artikel" class="rounded-lg border p-2.5"></textarea><select id="articleStatus" class="rounded-lg border p-2.5"><option>Draft</option><option>Terbit</option></select><button class="rounded-lg bg-blush-500 px-4 py-2.5 font-bold text-white">Simpan Artikel</button></form><div id="adminArticleList" class="mt-4 space-y-2 text-sm"></div></article>
+                        <article class="rounded-2xl border bg-white p-5"><h3 class="font-bold text-slate-800">Manajemen Kategori</h3><form class="mt-4 grid gap-2" onsubmit="saveCategory(event)"><input id="categoryId" type="hidden"><input id="categoryName" required maxlength="80" placeholder="Nama kategori" class="rounded border p-2"><input id="categoryDescription" maxlength="255" placeholder="Deskripsi kategori" class="rounded border p-2"><input id="categoryImage" type="url" placeholder="URL gambar kategori" class="rounded border p-2"><button class="rounded bg-slate-900 p-2 font-bold text-white">Simpan Kategori</button></form><div id="adminCategoryList" class="mt-4 space-y-2 text-sm"></div></article>
+                        <article class="rounded-2xl border bg-white p-5"><h3 class="font-bold text-slate-800">Pengguna &amp; Hak Akses</h3><form class="mt-4 grid gap-2" onsubmit="saveManagedUser(event)"><input id="managedUserId" type="hidden"><input id="managedUserName" required placeholder="Nama" class="rounded border p-2"><input id="managedUserEmail" required type="email" placeholder="Email" class="rounded border p-2"><input id="managedUserPhone" placeholder="Telepon" class="rounded border p-2"><select id="managedUserRole" class="rounded border p-2"><option value="pelanggan">Pelanggan</option><option value="admin">Administrator</option></select><input id="managedUserPassword" type="password" minlength="8" placeholder="Kata sandi awal (wajib saat tambah)" class="rounded border p-2"><button id="managedUserSubmit" class="rounded bg-slate-900 p-2 font-bold text-white">Tambah Pengguna</button></form><div id="adminUserList" class="mt-4 max-h-72 space-y-2 overflow-auto text-sm"></div></article>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- ADMIN MODALS -->
+        <!-- Modal: Tambah Varian Buket Baru (Terhubung Real-Time ke Storefront) -->
+        <div id="modalAddBouquet" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl font-poppins">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h3 class="font-bold text-slate-800 text-base font-serif"><i class="fa-solid fa-spa text-rose-500 mr-2"></i>Tambah Varian Buket Baru</h3>
+                    <button onclick="closeAdminModal('modalAddBouquet')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <form onsubmit="saveNewCatalogBouquet(event)" class="space-y-4 text-xs">
+                    <input type="hidden" id="bProductId"><input type="hidden" id="bProductCode">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nama Varian Buket</label>
+                        <input type="text" id="bNameInput" required placeholder="Contoh: Pastel Grace Harmony" class="w-full p-2.5 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-rose-400">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Kategori</label>
+                            <input id="bCategoryInput" list="productCategorySuggestions" value="Ulang Tahun" required placeholder="Pilih atau ketik kategori baru" class="w-full p-2.5 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-rose-400">
+                            <datalist id="productCategorySuggestions">
+                                <option value="Ulang Tahun"><option value="Wisuda"><option value="Anniversary"><option value="Valentine"><option value="Pernikahan"><option value="Bunga"><option value="Buket Bunga"><option value="Buket Wisuda"><option value="Snack"><option value="Snack Bouquet"><option value="Terima Kasih"><option value="Grand Opening"><option value="Duka Cita">
+                            </datalist>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Harga Jual (Rp)</label>
+                            <input type="number" id="bPriceInput" required value="275000" min="10000" class="w-full p-2.5 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-rose-400">
+                        </div>
+                        <div><label class="block font-semibold text-slate-700 mb-1">Stok Produk</label><input type="number" id="bStockInput" required value="10" min="0" class="w-full p-2.5 border border-slate-200 rounded-xl outline-none"></div>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">URL Foto Buket (Default: Foto Bunga Dumy 1)</label>
+                        <input type="file" id="bImgFile" accept="image/jpeg,image/png,image/webp" class="w-full p-2.5 border border-slate-200 rounded-xl">
+                        <input type="url" id="bImgInput" placeholder="Atau tempel URL foto (opsional)" class="mt-2 w-full p-2.5 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-rose-400">
+                        <p class="text-[10px] text-slate-400 mt-1">JPG, PNG, atau WEBP, maksimal 5 MB.</p>
+                        <button type="button" onclick="useDummyPhoto()" class="mt-2 px-3 py-1 bg-blush-50 text-blush-600 rounded-lg text-[11px] font-bold border border-blush-200 hover:bg-blush-100 transition-colors">
+                            <i class="fa-solid fa-image mr-1"></i> Gunakan Foto Referensi 'Bunga Dumy 1'
+                        </button>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Deskripsi Singkat</label>
+                        <textarea id="bDescInput" rows="2" placeholder="Rangkaian bunga segar pilihan..." class="w-full p-2.5 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-rose-400 resize-none">Rangkaian bunga segar istimewa dirangkai oleh florist profesional Roos & Fleur.</textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Label Tag (Opsional)</label>
+                            <input type="text" id="bTagInput" placeholder="Contoh: Best Seller / Premium" class="w-full p-2.5 border border-slate-200 rounded-xl outline-none">
+                        </div>
+                    </div>
+                    <div class="pt-2 flex justify-end gap-2">
+                        <button type="button" onclick="closeAdminModal('modalAddBouquet')" class="px-4 py-2 border rounded-xl text-slate-600">Batal</button>
+                        <button id="bouquetSubmitButton" type="submit" class="px-5 py-2 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 shadow-md">Simpan & Tampilkan di Web</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="promotionModal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-900/60 p-4">
+            <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+                <div class="mb-5 flex items-center justify-between"><div><h3 id="promotionModalTitle" class="text-lg font-bold text-slate-800">Tambah Promo</h3><p class="text-xs text-slate-500">Perubahan banner dan diskon langsung digunakan toko.</p></div><button type="button" onclick="closePromotionForm()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button></div>
+                <form id="promotionForm" onsubmit="savePromotion(event)" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <input type="hidden" id="promotionId">
+                    <label class="text-xs font-semibold text-slate-600 sm:col-span-2">Judul promo<input id="promotionTitle" required maxlength="160" class="mt-1 w-full rounded-lg border border-slate-200 p-2.5 text-sm font-normal"></label>
+                    <label class="text-xs font-semibold text-slate-600 sm:col-span-2">Deskripsi banner<textarea id="promotionDescription" required rows="2" class="mt-1 w-full rounded-lg border border-slate-200 p-2.5 text-sm font-normal"></textarea></label>
+                    <label class="text-xs font-semibold text-slate-600">Kode promo<input id="promotionCode" required maxlength="32" pattern="[A-Za-z0-9_-]{3,32}" class="mt-1 w-full rounded-lg border border-slate-200 p-2.5 text-sm font-normal uppercase"></label>
+                    <label class="text-xs font-semibold text-slate-600">Diskon (%)<input id="promotionPercent" type="number" required min="0" max="100" step="0.01" value="10" class="mt-1 w-full rounded-lg border border-slate-200 p-2.5 text-sm font-normal"></label>
+                    <label class="text-xs font-semibold text-slate-600">Minimum belanja (Rp)<input id="promotionMinimum" type="number" required min="0" step="1000" value="100000" class="mt-1 w-full rounded-lg border border-slate-200 p-2.5 text-sm font-normal"></label>
+                    <label class="text-xs font-semibold text-slate-600">Maksimum diskon (Rp)<input id="promotionMaximum" type="number" required min="0" step="1000" value="50000" class="mt-1 w-full rounded-lg border border-slate-200 p-2.5 text-sm font-normal"></label>
+                    <label class="text-xs font-semibold text-slate-600">Teks tombol<input id="promotionButtonText" maxlength="80" value="Pilih Buket Sekarang" class="mt-1 w-full rounded-lg border border-slate-200 p-2.5 text-sm font-normal"></label>
+                    <div class="sm:col-span-2"><label for="promotionImageFile" class="text-xs font-semibold text-slate-600">Foto banner promo</label><input id="promotionImageFile" name="foto_banner" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewPromotionImage(event)" class="mt-1 w-full rounded-lg border border-slate-200 p-2.5 text-sm font-normal"><input id="promotionImageCurrent" type="hidden"><p class="mt-1 text-[11px] text-slate-500">JPG, PNG, atau WEBP, maksimal 5 MB. Saat mengubah promo, pilih foto baru atau biarkan kosong untuk tetap memakai foto sebelumnya.</p><img id="promotionImagePreview" alt="Pratinjau banner promo" class="mt-3 hidden h-32 w-full rounded-xl object-cover sm:w-64"></div>
+                    <label class="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2"><input id="promotionActive" type="checkbox" checked class="rounded border-slate-300 text-rose-600"> Aktifkan dan tampilkan di toko</label>
+                    <div class="flex justify-end gap-2 pt-2 sm:col-span-2"><button type="button" onclick="closePromotionForm()" class="rounded-lg border px-4 py-2 text-sm">Batal</button><button id="promotionSubmit" class="rounded-lg bg-rose-600 px-5 py-2 text-sm font-bold text-white">Simpan Promo</button></div>
+                </form>
+            </div>
+        </div>
+
+        <div id="modalStock" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h3 class="font-bold text-slate-800">Tambah Bahan Baku</h3>
+                    <button onclick="closeAdminModal('modalStock')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form onsubmit="saveNewStock(event)" class="space-y-3 text-xs">
+                    <input type="hidden" id="mStockId">
+                    <input type="text" id="mStockName" required placeholder="Nama Bahan" class="w-full p-2.5 border rounded-lg outline-none">
+                    <div class="grid grid-cols-2 gap-3">
+                        <select id="mStockCat" class="w-full p-2.5 border rounded-lg outline-none">
+                            <option value="Bunga Segar">Bunga Segar</option><option value="Wrapping Paper">Kertas Wrapping</option><option value="Pita & Aksesoris">Pita & Aksesoris</option>
+                        </select>
+                        <input type="number" id="mStockQty" required value="50" min="0" class="w-full p-2.5 border rounded-lg outline-none">
+                    </div>
+                    <input type="date" id="mStockExpiry" class="w-full rounded-lg border p-2.5" aria-label="Tanggal kedaluwarsa">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" id="mStockCost" required value="8000" class="w-full p-2.5 border rounded-lg outline-none">
+                        <input type="number" id="mStockPrice" required value="15000" class="w-full p-2.5 border rounded-lg outline-none">
+                    </div>
+                    <div class="pt-2 flex justify-end gap-2">
+                        <button type="button" onclick="closeAdminModal('modalStock')" class="px-4 py-2 border rounded-lg text-slate-600">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="modalSupplier" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"><div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"><div class="mb-4 flex items-center justify-between"><h3 class="font-bold">Data Supplier</h3><button onclick="closeAdminModal('modalSupplier')" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="saveSupplier(event)" class="grid gap-3"><input id="supplierId" type="hidden"><input id="supplierName" required maxlength="150" placeholder="Nama supplier" class="rounded-lg border p-2.5"><input id="supplierCity" required maxlength="80" placeholder="Kota" class="rounded-lg border p-2.5"><input id="supplierItems" required maxlength="255" placeholder="Bahan yang disediakan" class="rounded-lg border p-2.5"><input id="supplierPhone" maxlength="30" placeholder="Nomor telepon" class="rounded-lg border p-2.5"><input id="supplierLeadTime" maxlength="50" placeholder="Lead time" class="rounded-lg border p-2.5"><button class="rounded-lg bg-indigo-600 p-2.5 font-bold text-white">Simpan Supplier</button></form></div></div>
+
+        <div id="modalPO" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h3 class="font-bold text-slate-800">Buat Purchase Order</h3>
+                    <button onclick="closeAdminModal('modalPO')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form onsubmit="saveNewPO(event)" class="space-y-3 text-xs">
+                    <select id="mPOSupplier" class="w-full p-2.5 border rounded-lg outline-none"></select>
+                    <select id="mPOItems" required class="w-full p-2.5 border rounded-lg outline-none"></select>
+                    <input type="number" id="mPOQuantity" min="0.01" step="0.01" required placeholder="Jumlah diterima" class="w-full p-2.5 border rounded-lg outline-none">
+                    <input type="number" id="mPOTotal" min="0" step="1" required placeholder="Total biaya (Rp)" class="w-full p-2.5 border rounded-lg outline-none">
+                    <div class="pt-2 flex justify-end gap-2">
+                        <button type="button" onclick="closeAdminModal('modalPO')" class="px-4 py-2 border rounded-lg text-slate-600">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg">Kirim PO</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="modalCustomer" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h3 class="font-bold text-slate-800">Tambah Pelanggan</h3>
+                    <button onclick="closeAdminModal('modalCustomer')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form onsubmit="saveCustomer(event)" class="space-y-3 text-xs">
+                    <input type="hidden" id="mCustId">
+                    <input type="text" id="mCustName" required placeholder="Nama Lengkap" class="w-full p-2.5 border rounded-lg outline-none">
+                    <input type="text" id="mCustPhone" required placeholder="No WA" class="w-full p-2.5 border rounded-lg outline-none">
+                    <div class="grid grid-cols-2 gap-3">
+                        <select id="mCustEventType" class="w-full p-2.5 border rounded-lg outline-none">
+                            <option value="Ulang Tahun">Ulang Tahun</option><option value="Anniversary">Anniversary</option>
+                        </select>
+                        <input type="date" id="mCustEventDate" required class="w-full p-2.5 border rounded-lg outline-none">
+                    </div>
+                    <textarea id="mCustInteraction" rows="2" maxlength="1000" placeholder="Catatan interaksi / tindak lanjut" class="w-full rounded-lg border p-2.5"></textarea>
+                    <div class="pt-2 flex justify-end gap-2">
+                        <button type="button" onclick="closeAdminModal('modalCustomer')" class="px-4 py-2 border rounded-lg">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white font-bold rounded-lg">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="modalExpense" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h3 class="font-bold text-slate-800">Catat Pengeluaran</h3>
+                    <button onclick="closeAdminModal('modalExpense')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form onsubmit="saveExpense(event)" class="space-y-3 text-xs">
+                    <input type="text" id="mExpenseDesc" required placeholder="Keterangan" class="w-full p-2.5 border rounded-lg outline-none">
+                    <div class="grid grid-cols-2 gap-3">
+                        <select id="mExpenseCat" class="w-full p-2.5 border rounded-lg outline-none">
+                            <option value="Operasional Toko">Operasional Toko</option><option value="Gaji Florist">Gaji Florist</option>
+                        </select>
+                        <input type="number" id="mExpenseAmount" required placeholder="Nominal" class="w-full p-2.5 border rounded-lg outline-none">
+                    </div>
+                    <div class="pt-2 flex justify-end gap-2">
+                        <button type="button" onclick="closeAdminModal('modalExpense')" class="px-4 py-2 border rounded-lg">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-teal-600 text-white font-bold rounded-lg">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="modalCourierAssignment" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm" onclick="if(event.target===this) closeAdminModal('modalCourierAssignment')">
+            <section role="dialog" aria-modal="true" aria-labelledby="courierModalTitle" class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+                <div class="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div><p class="text-xs font-bold uppercase tracking-wider text-blush-500">Pengiriman Pesanan</p><h2 id="courierModalTitle" class="mt-1 text-xl font-bold text-slate-900">Atur Kurir</h2><p id="courierOrderNumber" class="mt-1 text-xs text-slate-500"></p></div>
+                    <button type="button" onclick="closeAdminModal('modalCourierAssignment')" class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form onsubmit="saveCourierAssignment(event)" class="space-y-4">
+                    <div><label for="courierNameInput" class="mb-1 block text-sm font-semibold text-slate-700">Nama kurir</label><input id="courierNameInput" type="text" maxlength="120" required placeholder="Contoh: Andi Saputra" class="w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-blush-400 focus:ring-2 focus:ring-blush-100"></div>
+                    <div><label for="courierPhoneInput" class="mb-1 block text-sm font-semibold text-slate-700">Nomor telepon / WhatsApp kurir</label><input id="courierPhoneInput" type="tel" maxlength="30" required placeholder="Contoh: 081234567890" class="w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-blush-400 focus:ring-2 focus:ring-blush-100"></div>
+                    <div><label for="courierNoteInput" class="mb-1 block text-sm font-semibold text-slate-700">Catatan pengiriman <span class="font-normal text-slate-400">(opsional)</span></label><textarea id="courierNoteInput" maxlength="2000" rows="3" placeholder="Patokan alamat atau instruksi untuk kurir" class="w-full resize-y rounded-xl border border-slate-200 p-3 outline-none focus:border-blush-400 focus:ring-2 focus:ring-blush-100"></textarea></div>
+                    <div class="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-between">
+                        <button type="button" onclick="removeCourierAssignment()" class="rounded-xl border border-rose-200 px-4 py-2.5 font-semibold text-rose-600 hover:bg-rose-50">Hapus penugasan</button>
+                        <div class="flex justify-end gap-2"><button type="button" onclick="closeAdminModal('modalCourierAssignment')" class="rounded-xl border border-slate-200 px-4 py-2.5 font-semibold text-slate-600">Batal</button><button id="saveCourierButton" type="submit" class="rounded-xl bg-blush-500 px-5 py-2.5 font-bold text-white hover:bg-blush-600">Simpan kurir</button></div>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <!-- ADMIN TOAST -->
+        <div id="adminToast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 flex items-center gap-3 text-xs font-medium">
+            <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+            <span id="adminToastMsg">Pesan Notifikasi</span>
+        </div>
+    </div> <!-- END ADMIN -->
+</body>
+
+<script src="assets/js/app.js?v=20261103-1656"></script>
+</html>

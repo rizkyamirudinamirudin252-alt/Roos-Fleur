@@ -1,0 +1,8 @@
+ROOS & FLEUR — PAKET WEBSITE LENGKAP UNTUK HOSTING
+
+Arsip ini berisi file website, API, aset, gambar produk, dan QRIS.
+Sebelum menghapus file hosting lama, unduh config/database.php lama.
+Setelah ekstrak, pulihkan file tersebut ke folder config agar koneksi MySQL hosting tetap benar.
+Jika tidak punya cadangan, isi config/database.php dengan detail MySQL dari InfinityFree.
+Jangan unggah dump database ke folder situs. Database MySQL terpisah dari file website.
+Kode memakai awalan URL /roos-fleur/, sehingga target folder biasanya htdocs/roos-fleur.

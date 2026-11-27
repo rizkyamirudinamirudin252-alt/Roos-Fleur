@@ -1,0 +1,279 @@
+::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        #storeApp ::-webkit-scrollbar { width: 8px; }
+        #storeApp ::-webkit-scrollbar-track { background: #fdf2f8; }
+        #storeApp ::-webkit-scrollbar-thumb { background: #fbcfe8; border-radius: 4px; }
+        #storeApp ::-webkit-scrollbar-thumb:hover { background: #f9a8d4; }
+
+        #storeApp h1, #storeApp h2, #storeApp h3, #storeApp .font-serif { font-family: 'Playfair Display', serif; }
+        #storeApp .slide-in { transform: translateX(100%); transition: transform 0.3s ease-in-out; }
+        #storeApp .slide-in.open { transform: translateX(0); }
+        #storeApp .fade-in { opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out; }
+        #storeApp .fade-in.open { opacity: 1; pointer-events: auto; }
+        #storeApp .radio-swatch:checked + label {
+            ring-width: 4px; ring-color: #ec4899; transform: scale(1.1);
+        }
+#adminApp .custom-glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); }
+
+@keyframes promo-card-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes promo-badge-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 168, 212, 0); }
+    50% { box-shadow: 0 0 0 5px rgba(249, 168, 212, .16); }
+}
+
+@keyframes promo-code-glow {
+    0%, 100% { text-shadow: 0 0 0 rgba(249, 168, 212, 0); }
+    50% { text-shadow: 0 0 14px rgba(249, 168, 212, .85); }
+}
+
+#storeApp .promo-card-motion { animation: promo-card-float 4s ease-in-out infinite; }
+#storeApp .promo-badge-motion { animation: promo-badge-pulse 2.4s ease-in-out infinite; }
+#storeApp .promo-code-motion { animation: promo-code-glow 2.4s ease-in-out infinite; }
+
+@keyframes promo-slide-in-next {
+    from { opacity: .55; transform: translateX(28px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes promo-slide-in-prev {
+    from { opacity: .55; transform: translateX(-28px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+#storeApp .promo-card-motion.promo-slide-next { animation: promo-slide-in-next .38s ease-out; }
+#storeApp .promo-card-motion.promo-slide-prev { animation: promo-slide-in-prev .38s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+    #storeApp .promo-card-motion,
+    #storeApp .promo-badge-motion,
+    #storeApp .promo-code-motion { animation: none; }
+    #storeApp .promo-card-motion.promo-slide-next,
+    #storeApp .promo-card-motion.promo-slide-prev { animation: none; }
+}
+
+    
+        .katalog-section {
+    padding: 70px 6%;
+    background: #fffaf9;
+}
+
+.katalog-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.katalog-header h2 {
+    margin: 0 0 10px;
+    font-size: 36px;
+    color: #7b4b5a;
+}
+
+.katalog-header p {
+    margin: 0;
+    color: #777;
+    font-size: 16px;
+}
+
+.customer-produk-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(240px, 1fr));
+
+    gap: 25px;
+}
+
+.customer-produk-card {
+    background: white;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.08);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.customer-produk-card:hover {
+    transform: translateY(-5px);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.12);
+}
+
+.customer-produk-image {
+    width: 100%;
+    height: 280px;
+
+    object-fit: cover;
+
+    display: block;
+
+    background: #f1eeee;
+}
+
+.customer-produk-info {
+    padding: 20px;
+}
+
+.customer-produk-info h3 {
+    margin: 0 0 8px;
+
+    font-size: 20px;
+
+    color: #333;
+}
+
+.customer-kategori {
+    font-size: 14px;
+
+    color: #9b6877;
+
+    margin-bottom: 10px;
+}
+
+.customer-deskripsi {
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    color: #777;
+
+    min-height: 45px;
+}
+
+.customer-harga {
+    margin-top: 15px;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    color: #7b4b5a;
+}
+
+.customer-stok {
+    margin-top: 7px;
+
+    font-size: 13px;
+
+    color: #888;
+}
+
+.btn-pesan-produk {
+    width: 100%;
+
+    margin-top: 15px;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #7b4b5a;
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.btn-pesan-produk:hover {
+    opacity: .9;
+}
+
+.loading-produk {
+    text-align: center;
+
+    color: #777;
+}
+
+.produk-error {
+    text-align: center;
+
+    color: #b42318;
+}
+
+/* Small-screen layout for the admin dashboard and storefront. */
+@media (max-width: 767px) {
+    #adminApp {
+        min-height: 100dvh;
+    }
+
+    #adminApp > aside {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+    }
+
+    #adminApp > aside #navMenu {
+        max-height: min(65dvh, 32rem);
+        overflow-y: auto;
+    }
+
+    #adminApp > main {
+        height: auto;
+        min-height: calc(100dvh - 4rem);
+        overflow-x: hidden;
+    }
+
+    #adminApp > main > header {
+        height: auto;
+        min-height: 4rem;
+        padding: .75rem 1rem;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: .75rem;
+    }
+
+    #adminApp > main > header > div {
+        width: 100%;
+        min-width: 0;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    #adminApp #pageTitle {
+        font-size: 1rem;
+        line-height: 1.35;
+    }
+
+    #adminApp > main > header > div:last-child {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: .125rem;
+    }
+
+    #adminApp > main > header > div:last-child > * {
+        flex: 0 0 auto;
+    }
+
+    #storeApp .max-w-7xl {
+        max-width: 100%;
+    }
+
+    #storeApp #productGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .75rem;
+    }
+}
+
+@media (max-width: 380px) {
+    #storeApp #productGrid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
